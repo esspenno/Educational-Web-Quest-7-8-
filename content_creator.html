@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Конструктор Генезиса</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background: #f0f4f8; margin: 0; padding: 20px; }
+        .cc-container { max-width: 1050px; margin: 0 auto; background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        h1 { color: #2c3e50; text-align: center; border-bottom: 3px solid #3498db; padding-bottom: 10px; }
+        .mission-box { background: #e3f2fd; padding: 15px; border-radius: 10px; margin-bottom: 25px; border-left: 5px solid #2196f3; }
+        .canvas { display: flex; gap: 30px; }
+        .bank-side { flex: 0.8; background: #fdfdfd; border: 1px solid #e0e0e0; border-radius: 15px; padding: 15px; min-height: 500px; }
+        #bank { min-height: 450px; display: flex; flex-wrap: wrap; gap: 8px; align-content: flex-start; }
+        .slots-side { flex: 1.4; background: #fff; padding: 15px; border: 2px solid #3498db; border-radius: 15px; }
+        .row { display: flex; align-items: center; margin-bottom: 10px; height: 55px; }
+        .label { width: 220px; text-align: right; padding-right: 15px; font-weight: bold; color: #546e7a; font-size: 0.9em; }
+        .slot { flex: 1; height: 45px; border: 2px dashed #cbd5e0; border-radius: 10px; display: flex; align-items: center; justify-content: center; background: #fafafa; transition: 0.2s; position: relative; }
+        .slot.hover { border-color: #3498db; background: #ebf8ff; }
+        .slot.success { border-color: #4caf50; background: #e8f5e9; border-style: solid; }
+        .slot.error { border-color: #f44336; background: #ffebee; border-style: solid; }
+        .chip { background: #3498db; color: white; padding: 8px 12px; border-radius: 8px; cursor: grab; text-align: center; font-weight: bold; font-size: 0.85em; box-shadow: 0 3px 5px rgba(0,0,0,0.1); user-select: none; }
+        .btns { text-align: center; margin-top: 30px; display: flex; justify-content: center; gap: 15px; }
+        .btn { padding: 12px 25px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 1em; }
+        .btn-blue { background: #34495e; color: white; }
+        .btn-green { background: #27ae60; color: white; display: none; }
+        .btn-orange { background: #f39c12; color: white; display: none; }
+        .summary { margin-top: 20px; padding: 20px; border: 2px solid #27ae60; border-radius: 15px; background: #f1f8f4; display: none; }
+    </style>
+</head>
+<body>
+
+<div class="cc-container">
+    <h1 id="r-title">Загрузка...</h1>
+    <div class="mission-box"><strong>Миссия:</strong> <span id="r-mission"></span></div>
+    <div class="canvas">
+        <div class="bank-side">
+            <h4>📦 Банк понятий</h4>
+            <div id="bank" ondrop="onDrop(event)" ondragover="onAllowDrop(event)"></div>
+        </div>
+        <div class="slots-side">
+            <h4>🛠️ Схема восстановления</h4>
+            <div id="slots-list"></div>
+        </div>
+    </div>
+    <div id="summary-box" class="summary">
+        <h3 style="margin-top:0">✅ Модуль верифицирован</h3>
+        <p id="summary-text"></p>
+    </div>
+    <div class="btns">
+        <button class="btn btn-blue" onclick="check()">📡 Проверить</button>
+        <button id="dl-btn" class="btn btn-green" onclick="exportData()">💾 Скачать JSON</button>
+        <button id="next-btn" class="btn btn-orange" onclick="location.href='infographic.html'">🚀 Перейти к сборке</button>
+    </div>
+</div>
+
+<script>
+    const dataConfig = {
+        captain: {
+            icon: "👑", title: "Модуль Управления", mission: "Восстановите схему информационных процессов и виды компьютеров.",
+            slots: [
+                { label: "Получение данных", ok: "📥 ВВОД" },
+                { label: "Преобразование", ok: "⚙️ ОБРАБОТКА" },
+                { label: "Сохранение", ok: "💾 ХРАНЕНИЕ" },
+                { label: "Передача итога", ok: "📤 ВЫВОД" },
+                { label: "Мощная станция", ok: "🖥️ СУПЕР-ЭВМ" },
+                { label: "Сетевой узел", ok: "🌐 СЕРВЕР" }
+            ],
+            wrong: ["📝 БУМАГА", "🗑️ УДАЛЕНИЕ", "🔋 БАТАРЕЯ"],
+            text: "Компьютер — универсальное устройство. Основные процессы: ввод, обработка, хранение и вывод. К мощным видам ЭВМ относятся Суперкомпьютеры и серверы."
+        },
+        historian: {
+            icon: "📜", title: "Архив Поколений", mission: "Соотнесите периоды развития с элементной базой компьютеров.",
+            slots: [
+                { label: "Поколение I (1945)", ok: "💡 ЛАМПЫ" },
+                { label: "Поколение II (1955)", ok: "⏳ ТРАНЗИСТОРЫ" },
+                { label: "Поколение III (1964)", ok: "🟦 МИКРОСХЕМЫ" },
+                { label: "Поколение IV (1971)", ok: "🧠 ПРОЦЕССОРЫ" },
+                { label: "Технологии V", ok: "🤖 ИИ" },
+                { label: "Доэлектронная эра", ok: "⚙️ ШЕСТЕРНИ" }
+            ],
+            wrong: ["📡 WI-FI", "📞 ДИСК", "🔌 ПРОВОД"],
+            text: "История ЭВМ — это путь от механических машин Паскаля до современных микропроцессоров и искусственного интеллекта."
+        },
+        connector: {
+            icon: "🔌", title: "Узел Периферии", mission: "Классифицируйте устройства ввода и вывода информации.",
+            slots: [
+                { label: "Ввод (текст)", ok: "⌨️ КЛАВИАТУРА" },
+                { label: "Ввод (графика)", ok: "📸 СКАНЕР" },
+                { label: "Ввод (звук)", ok: "🎤 МИКРОФОН" },
+                { label: "Вывод (экран)", ok: "🖥️ МОНИТОР" },
+                { label: "Вывод (бумага)", ok: "🖨️ ПРИНТЕР" },
+                { label: "Вывод (звук)", ok: "🔊 КОЛОНКИ" }
+            ],
+            wrong: ["💾 ДИСКЕТА", "🧠 МОЗГ", "🔋 БЛОК"],
+            text: "Взаимодействие с компьютером обеспечивают устройства ввода (преобразование данных в цифру) и вывода (возврат результата человеку)."
+        },
+        engineer: {
+            icon: "⚙️", title: "Инженерный Отсек", mission: "Соберите аппаратную конфигурацию системного блока.",
+            slots: [
+                { label: "Арифм. устройство", ok: "🧠 ПРОЦЕССОР" },
+                { label: "Временная память", ok: "⚡ ОПЕРАТИВНАЯ" },
+                { label: "Постоянная память", ok: "💿 ЖЕСТКИЙ" },
+                { label: "Соединение узлов", ok: "🧱 МАТЕРИНКА" },
+                { label: "Видео-сигнал", ok: "🖼️ ВИДЕОКАРТА" },
+                { label: "Питание током", ok: "🔌 БЛОК ПИТАНИЯ" }
+            ],
+            wrong: ["🖱️ КОВРИК", "🔊 НАУШНИКИ", "📱 ПЛАНШЕТ"],
+            text: "Внутреннее устройство включает процессор для обработки, ОЗУ для временного хранения и ПЗУ/жесткий диск для постоянного."
+        }
+    };
+
+    const myRole = localStorage.getItem('role') || 'captain';
+    const active = dataConfig[myRole];
+    document.getElementById('r-title').innerText = active.icon + " " + active.title;
+    document.getElementById('r-mission').innerText = active.mission;
+
+    const bank = document.getElementById('bank');
+    const items = [...active.slots.map(s => s.ok), ...active.wrong].sort(() => Math.random() - 0.5);
+    items.forEach((txt, i) => {
+        const div = document.createElement('div');
+        div.className = 'chip'; div.innerText = txt; div.draggable = true; div.id = 'ch-' + i;
+        div.addEventListener('dragstart', (e) => e.dataTransfer.setData("text", e.target.id));
+        bank.appendChild(div);
+    });
+
+    const list = document.getElementById('slots-list');
+    active.slots.forEach((s, i) => {
+        const row = document.createElement('div');
+        row.className = 'row';
+        row.innerHTML = `<div class="label">${s.label}:</div><div class="slot" id="sl-${i}" data-label="${s.label}" data-ans="${s.ok}" ondrop="onDrop(event)" ondragover="onAllowDrop(event)" ondragleave="onLeave(event)"></div>`;
+        list.appendChild(row);
+    });
+
+    function onAllowDrop(e) { e.preventDefault(); e.currentTarget.classList.add('hover'); }
+    function onLeave(e) { e.currentTarget.classList.remove('hover'); }
+    function onDrop(e) {
+        e.preventDefault();
+        const id = e.dataTransfer.getData("text");
+        const chip = document.getElementById(id);
+        const target = e.currentTarget;
+        target.classList.remove('hover');
+        if (target.id === 'bank' || (target.classList.contains('slot') && target.children.length === 0)) target.appendChild(chip);
+    }
+
+    function check() {
+        let err = 0;
+        active.slots.forEach((_, i) => {
+            const s = document.getElementById('sl-' + i);
+            s.classList.remove('success', 'error');
+            if (s.children.length > 0 && s.children[0].innerText === s.dataset.ans) s.classList.add('success');
+            else { s.classList.add('error'); err++; }
+        });
+        if (err === 0) {
+            document.getElementById('summary-box').style.display = 'block';
+            document.getElementById('summary-text').innerText = active.text;
+            document.getElementById('dl-btn').style.display = 'inline-block';
+            if (myRole === 'captain') document.getElementById('next-btn').style.display = 'inline-block';
+        } else alert("❌ Ошибка в модуле! Синхронизация не удалась.");
+    }
+
+    function exportData() {
+        const out = { 
+            role: myRole, title: active.title, icon: active.icon, 
+            summary: active.text,
+            data: active.slots.map((s, i) => ({
+                label: s.label,
+                val: document.getElementById('sl-' + i).innerText
+            }))
+        };
+        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(out));
+        const a = document.createElement('a');
+        a.href = dataStr; a.download = "module_" + myRole + ".json"; a.click();
+    }
+</script>
+</body>
+</html>

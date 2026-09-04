@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Восстановление Генезиса</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="html2canvas.min.js"></script>
+    <style>
+        .container { max-width: 1000px; padding: 10px 20px; }
+        h1 { font-size: 2.2em; margin-bottom: 5px; }
+        p { margin: 5px 0 15px 0; font-size: 1.1em; }
+
+        #puzzle-board { 
+            display: grid; 
+            grid-template-columns: 1fr 1fr; 
+            gap: 15px; 
+            background: white; 
+            padding: 20px; 
+            border-radius: 15px; 
+            border: 3px solid #3498db; 
+        }
+        
+        .puzzle-slot { 
+            border: 2px dashed #bdc3c7; 
+            border-radius: 12px; 
+            min-height: 250px; 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center; 
+            align-items: center; 
+            text-align: center; 
+            background: #fdfdfd; 
+            position: relative; 
+            padding: 10px; 
+        }
+        
+        .puzzle-slot span { font-size: 1.3em; font-weight: bold; color: #7f8c8d; }
+        .puzzle-slot input { position: absolute; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
+        
+        .filled-slot { background: white; border: 2px solid #3498db; box-shadow: 0 4px 10px rgba(0,0,0,0.05); justify-content: flex-start; }
+        
+        .filled-slot h3 { color: #2980b9; margin: 5px 0; border-bottom: 2px solid #3498db; width: 100%; font-size: 1.3em; padding-bottom: 4px; }
+        .filled-slot .icon { font-size: 2.5em; margin-bottom: 5px; }
+
+        .filled-slot ul { text-align: left; font-size: 0.95em; padding-left: 0; list-style: none; width: 100%; margin: 0; }
+        .filled-slot ul li { margin: 4px 0; padding: 4px 10px; background: #f1f8ff; border-radius: 5px; border-left: 4px solid #3498db; }
+        .filled-slot .lbl { font-weight: bold; color: #546e7a; margin-right: 3px; font-size: 0.8em; text-transform: uppercase; }
+        
+        #recovery-zone { display: none; text-align: center; margin-top: 20px; }
+        
+
+        #final-anim { display: none; background: #000; color: #0f0; padding: 30px; border-radius: 15px; font-family: monospace; text-align: left; }
+        .bar { height: 20px; background: #222; border: 1px solid #0f0; margin: 15px 0; border-radius: 5px; }
+        #progress { height: 100%; width: 0; background: #0f0; transition: 2s; }
+        
+        #success-screen { display: none; text-align: center; background: #ffffff; padding: 40px; border-radius: 20px; border: 4px solid #27ae60; }
+    </style>
+</head>
+<body>
+    <div class="container" id="quest-ui">
+        <h1>🛠️ Ядро системы "Генезис"</h1>
+        <p>Агенты, загрузите 4 модуля памяти для полной дефрагментации системы.</p>
+        
+        <div id="puzzle-board">
+            <div class="puzzle-slot" id="slot-captain"><span>👑 Модуль Управления</span><input type="file" accept=".json" onchange="loadFile(event, 'slot-captain')"></div>
+            <div class="puzzle-slot" id="slot-historian"><span>📜 Модуль Истории</span><input type="file" accept=".json" onchange="loadFile(event, 'slot-historian')"></div>
+            <div class="puzzle-slot" id="slot-connector"><span>🔌 Модуль Периферии</span><input type="file" accept=".json" onchange="loadFile(event, 'slot-connector')"></div>
+            <div class="puzzle-slot" id="slot-engineer"><span>⚙️ Модуль Инженерии</span><input type="file" accept=".json" onchange="loadFile(event, 'slot-engineer')"></div>
+        </div>
+
+        <div id="recovery-zone">
+            <h2>💎 Данные синхронизированы!</h2>
+            <button class="btn" style="background: #27ae60; padding: 15px 50px; font-size: 1.3em;" onclick="startRecovery()">ВОССТАНОВИТЬ ПАМЯТЬ</button>
+        </div>
+    </div>
+
+    <div class="container" id="final-anim">
+        <p>> Авторизация: АГЕНТЫ [ОК]</p>
+        <p>> Загрузка секторов памяти...</p>
+        <p>> Интеграция модулей Генезиса...</p>
+        <div class="bar"><div id="progress"></div></div>
+        <p>> СТАТУС: ИИ УСПЕШНО ОЖИВЛЕН</p>
+    </div>
+
+    <div class="container" id="success-screen">
+        <h1 style="font-size: 2.5em;">СИСТЕМА АКТИВНА!</h1>
+        <p style="font-size: 1.3em;">Вы восстановили цифровой разум. Генезис снова в строю!</p>
+        <button class="btn" style="background: #3498db; padding: 12px 35px;" onclick="saveScreenshot()">💾 СКАЧАТЬ ИТОГОВЫЙ ЧЕРТЕЖ</button>
+    </div>
+
+    <script>
+        let loaded = 0;
+        function loadFile(event, slotId) {
+            const file = event.target.files[0];
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const data = JSON.parse(e.target.result);
+                const slot = document.getElementById(slotId);
+
+                slot.innerHTML = `<div class="icon">${data.icon}</div>
+                                  <h3>${data.title}</h3>
+                                  <ul>${data.data.map(item => `<li><span class="lbl">${item.label}</span> ${item.val}</li>`).join('')}</ul>`;
+                slot.classList.add('filled-slot');
+                loaded++;
+                if (loaded === 4) document.getElementById('recovery-zone').style.display = 'block';
+            };
+            reader.readAsText(file);
+        }
+
+        function startRecovery() {
+            document.getElementById('quest-ui').style.display = 'none';
+            document.getElementById('final-anim').style.display = 'block';
+            setTimeout(() => document.getElementById('progress').style.width = '100%', 100);
+            setTimeout(() => {
+                document.getElementById('final-anim').style.display = 'none';
+                document.getElementById('success-screen').style.display = 'block';
+            }, 3000);
+        }
+
+        function saveScreenshot() {
+            document.getElementById('quest-ui').style.display = 'block';
+            document.getElementById('recovery-zone').style.display = 'none';
+            document.querySelector('h1').innerText = "ИТОГОВЫЙ ЧЕРТЕЖ СИСТЕМЫ 'ГЕНЕЗИС'";
+            html2canvas(document.getElementById('puzzle-board'), {backgroundColor: '#ffffff'}).then(canvas => {
+                const link = document.createElement('a');
+                link.download = 'genesis_blueprint.png';
+                link.href = canvas.toDataURL();
+                link.click();
+            });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Выбор специализации</title>
+    <link rel="stylesheet" href="style.css">
+<style>
+    .roles-wrapper {
+        display: flex;
+        justify-content: center;
+        margin-top: 40px;
+    }
+
+    .roles-container {
+        display: grid;
+        grid-template-columns: repeat(2, 340px); /* БЫЛО 280 — стало 340 */
+        gap: 35px;
+        justify-content: center;
+    }
+
+    .role-card {
+        background-color: #f8f9fa;
+        border: 1px solid #e0e0e0;
+        border-radius: 16px;
+        padding: 35px 25px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .role-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 12px 25px rgba(0, 0, 0, 0.08);
+        border-color: #3498db;
+    }
+
+    .role-icon {
+        font-size: 4.5em;
+        margin-bottom: 20px;
+    }
+
+    .role-card h3 {
+        margin-top: 0;
+        font-size: 1.4em;
+        color: #2980b9;
+    }
+
+    .role-card p {
+        font-size: 1em;
+        color: #555;
+        line-height: 1.6;
+    }
+
+    @media (max-width: 800px) {
+        .roles-container {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+</head>
+<body>
+    <div class="container">
+        <h1>Выберите свою специализацию</h1>
+        <p>Каждый член команды должен выбрать уникальную роль. От вашего выбора зависит, к каким данным вы получите доступ и какой фрагмент чертежа будете создавать.</p>
+        
+        <div class="roles-container">
+            <div class="role-card" id="role-captain">
+                <div class="role-icon">👑</div>
+                <h3>Капитан</h3>
+                <p>Изучает общие понятия и типы компьютеров. Отвечает за финальную сборку чертежа.</p>
+            </div>
+            <div class="role-card" id="role-historian">
+                <div class="role-icon">📜</div>
+                <h3>Хранитель Времени</h3>
+                <p>Исследует историю развития ЭВМ, от гигантских ламповых машин до современных устройств.</p>
+            </div>
+            <div class="role-card" id="role-connector">
+                <div class="role-icon">🔌</div>
+                <h3>Мастер Подключений</h3>
+                <p>Разбирается в устройствах ввода и вывода, которые связывают человека с машиной.</p>
+            </div>
+            <div class="role-card" id="role-engineer">
+                <div class="role-icon">⚙️</div>
+                <h3>Системный Инженер</h3>
+                <p>Знаток "железа". Изучает внутреннее устройство компьютера: процессор, память и другие компоненты.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('role-captain').onclick = () => selectRole('captain');
+        document.getElementById('role-historian').onclick = () => selectRole('historian');
+        document.getElementById('role-connector').onclick = () => selectRole('connector');
+        document.getElementById('role-engineer').onclick = () => selectRole('engineer');
+
+        function selectRole(roleName) {
+            localStorage.setItem('role', roleName);
+            window.location.href = 'task.html';
+        }
+    </script>
+</body>
+</html>

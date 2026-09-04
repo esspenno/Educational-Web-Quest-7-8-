@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Задание</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1 id="task-title">Загрузка задания...</h1>
+        <p>Выполните все задания, чтобы получить ключевое слово.</p>
+        
+        <div class="progress-container">
+            <div id="progressBar"></div>
+        </div>
+
+        <div id="tasks-container"></div>
+
+        <div id="result-container" class="hidden">
+            <div class="feedback correct" style="display: block; text-align: center;">
+                <h2>🎉 Все задания выполнены! 🎉</h2>
+                <p id="secret-word" style="font-size: 1.5em; border:none; background:none; color: #c62828;"></p>
+                <p id="final-instruction"></p>
+                <button id="final-button" class="btn hidden"></button>
+            </div>
+        </div>
+    </div>
+
+<script>
+
+
+const rolesData = {
+    captain: {
+        name: "Капитан",
+        secret: "КОМПЬЮТЕР",
+        isCaptain: true,
+        html: `
+            <div class="task" id="task1"><h2>Задание 1. Определи понятие</h2>
+                <p>Вставьте пропущенные слова в определение компьютера:</p>
+                <p>Компьютер — это универсальное электронное устройство, предназначенное для 
+                    <select id="t1b1">
+                        <option value="">...</option>
+                        <option value="ввода">ввода</option>
+                        <option value="обработки">обработки</option>
+                    </select> информации, её <select id="t1b2">
+                        <option value="">...</option>
+                        <option value="хранения">хранения</option>
+                        <option value="удаления">удаления</option>
+                    </select> и <select id="t1b3">
+                        <option value="">...</option>
+                        <option value="преобразования">преобразования</option>
+                        <option value="вывода">вывода</option>
+                    </select> результатов.</p>
+                <button class="btn" onclick="checkCaptainTask1()">Проверить</button><div class="feedback" id="fb1"></div></div>
+
+            <div class="task" id="task2"><h2>Задание 2. Распредели по типам</h2>
+                <div class="grid"><div class="item">Ноутбук школьника <select id="t2i1">
+                    <option value="">...</option><option value="pc">Персональный ПК</option>
+                    <option value="server">Сервер</option>
+                    <option value="super">Суперкомпьютер</option></select>
+                </div><div class="item">Главный компьютер онлайн-магазина <select id="t2i2">
+                    <option value="">...</option><option value="pc">Персональный ПК</option>
+                    <option value="server">Сервер</option>
+                    <option value="super">Суперкомпьютер</option></select>
+                </div><div class="item">Кластер для моделирования климата <select id="t2i3">
+                    <option value="">...</option>
+                    <option value="pc">Персональный ПК</option>
+                    <option value="server">Сервер</option>
+                    <option value="super">Суперкомпьютер</option></select>
+                </div></div><button class="btn" onclick="checkCaptainTask2()">Проверить</button><div class="feedback" id="fb2"></div></div>
+
+            <div class="task" id="task3"><h2>Задание 3. Ситуационная задача</h2>
+                <p>Школе нужна система, где каталог библиотечных книг будет доступен одновременно с 25 компьютеров. Какой тип компьютера будет выполнять роль «хранилища»?</p>
+                <label><input type="radio" name="t3" value="pc"> Персональный компьютер</label>
+                <label><input type="radio" name="t3" value="server"> Сервер</label>
+                <label><input type="radio" name="t3" value="super"> Суперкомпьютер</label>
+            <br><button class="btn" onclick="checkCaptainTask3()">Проверить</button><div class="feedback" id="fb3"></div></div>`,
+            
+        init: null, 
+        checks: { 
+            checkCaptainTask1: () => { const isOk = document.getElementById('t1b1').value === 'обработки' && document.getElementById('t1b2').value === 'хранения' && document.getElementById('t1b3').value === 'вывода'; showFeedback('fb1', isOk, isOk ? '✅ Верно!' : '❌ Ошибка в определении.'); },
+            checkCaptainTask2: () => { const c1 = document.getElementById('t2i1').value === 'pc'; const c2 = document.getElementById('t2i2').value === 'server'; const c3 = document.getElementById('t2i3').value === 'super'; const isOk = c1 && c2 && c3; showFeedback('fb2', isOk, isOk ? '✅ Отлично!' : '❌ Не все типы верны. Подумайте о масштабе задач.'); },
+            checkCaptainTask3: () => { const val = document.querySelector('input[name="t3"]:checked')?.value; const isOk = val === 'server'; showFeedback('fb3', isOk, isOk ? '✅ Правильно! Сервер как раз для этого и нужен.' : '❌ Неверно. Только сервер справится с такой задачей.'); }
+        }
+    },
+    historian: {
+        name: "Хранитель Времени",
+        secret: "ИСТОРИЯ РАЗВИТИЯ",
+        isCaptain: false,
+        html: `
+            <div class="task" id="task1"><h2>Задание 1. Расставь по порядку</h2>
+                <p>Перетащите карточки в правильном порядке (от самого раннего к позднему).</p>
+                <div class="timeline" id="sourceItems"><div class="timeline-item" draggable="true" data-order="4">Микропроцессоры</div>
+                <div class="timeline-item" draggable="true" data-order="1">Электронные лампы</div>
+                <div class="timeline-item" draggable="true" data-order="3">Интегральные схемы</div>
+                <div class="timeline-item" draggable="true" data-order="2">ранзисторы</div>
+                </div><p><strong>Ваш ответ:</strong></p><div class="timeline" id="dropZone"></div>
+                <button class="btn" onclick="checkHistorianTask1()">Проверить</button><div class="feedback" id="fb1"></div></div>
+
+            <div class="task" id="task2"><h2>Задание 2. Что на чем работало?</h2>
+                <div class="grid"><div><strong>I поколение:</strong> <select id="m1">
+                    <option value="">...</option><option value="lamps">Электронные лампы</option>
+                    <option value="transistors">Транзисторы</option></select></div>
+                <div><strong>II поколение:</strong> <select id="m2">
+                    <option value="">...</option>
+                    <option value="lamps">Электронные лампы</option>
+                    <option value="transistors">Транзисторы</option></select></div>
+                <div><strong>III поколение:</strong> <select id="m3">
+                    <option value="">...</option>
+                    <option value="chips">Интегральные схемы</option>
+                    <option value="processors">Микропроцессоры</option></select></div></div>
+                <button class="btn" onclick="checkHistorianTask2()">Проверить</button><div class="feedback" id="fb2"></div></div>
+
+            <div class="task" id="task3"><h2>Задание 3. Причина и следствие</h2>
+                <p><strong>Вопрос:</strong> Какое изобретение позволило компьютерам из огромных залов "переехать" на письменный стол?</p>
+                <label><input type="radio" name="q1" value="lamps"> Электронные лампы</label>
+                <label><input type="radio" name="q1" value="circuits"> Интегральные схемы и микропроцессоры</label>
+                <br><button class="btn" onclick="checkHistorianTask3()">Проверить</button><div class="feedback" id="fb3"></div></div>`,
+
+        init: function() { 
+            let draggedItem = null;
+            document.querySelectorAll('[draggable="true"]').forEach(item => {
+                item.addEventListener('dragstart', (e) => { draggedItem = e.target; setTimeout(() => e.target.classList.add('dragging'), 0); });
+                item.addEventListener('dragend', () => draggedItem.classList.remove('dragging'));
+            });
+            document.getElementById('dropZone').addEventListener('dragover', e => e.preventDefault());
+            document.getElementById('dropZone').addEventListener('drop', (e) => { e.preventDefault(); if (draggedItem) document.getElementById('dropZone').appendChild(draggedItem); });
+        },
+        checks: {
+            checkHistorianTask1: () => { const items = document.querySelectorAll('#dropZone .timeline-item'); const order = Array.from(items).map(i => i.dataset.order); const isOk = JSON.stringify(order) === '["1","2","3","4"]'; showFeedback('fb1', isOk, isOk ? '✅ Идеальный порядок!' : '❌ Порядок нарушен.'); },
+            checkHistorianTask2: () => { const isOk = document.getElementById('m1').value === 'lamps' && document.getElementById('m2').value === 'transistors' && document.getElementById('m3').value === 'chips'; showFeedback('fb2', isOk, isOk ? '✅ Верно!' : '❌ Есть ошибки в соотнесении.'); },
+            checkHistorianTask3: () => { const val = document.querySelector('input[name="q1"]:checked')?.value; const isOk = val === 'circuits'; showFeedback('fb3', isOk, isOk ? '✅ Именно! Они позволили уместить тысячи транзисторов на одном кристалле.' : '❌ Неверно.'); }
+        }
+    },
+    connector: {
+        name: "Мастер Подключений",
+        secret: "УСТРОЙСТВА ВВОДА-ВЫВОДА",
+        isCaptain: false,
+        html: `
+            <div class="task" id="task1"><h2>Задание 1. Ввод или вывод?</h2>
+                <p>Распределите устройства по их основному назначению.</p>
+                <div class="devices-grid" id="source-devices"><div class="device-card" draggable="true">⌨️ Клавиатура</div>
+                <div class="device-card" draggable="true">🖥️ Монитор</div>
+                <div class="device-card" draggable="true">🖱️ Мышь</div>
+                <div class="device-card" draggable="true">🖨️ Принтер</div>
+                <div class="device-card" draggable="true">🎤 Микрофон</div>
+                <div class="device-card" draggable="true">🔊 Колонки</div></div>
+            <div style="display:flex; gap:10px; margin-top:10px;">
+            <div id="input-zone" class="timeline" style="width:50%; border-color:green; min-height:80px;"><h4 style="margin:0; text-align:center;">Устройства ВВОДА</h4></div>
+            <div id="output-zone" class="timeline" style="width:50%; border-color:orange; min-height:80px;"><h4 style="margin:0; text-align:center;">Устройства ВЫВОДА</h4></div></div>
+            <button class="btn" onclick="checkConnectorTask1()">Проверить</button><div class="feedback" id="fb1"></div></div>
+
+            <div class="task" id="task2"><h2>Задание 2. Какое устройство для чего?</h2>
+                <div class="match-list"><div class="match-item"><div>Преобразует бумажный документ в цифровой:</div>
+                    <select id="f1"><option value="">...</option>
+                        <option value="printer">Принтер</option>
+                        <option value="scanner">Сканер</option></select></div>
+                <div class="match-item"><div>Позволяет управлять курсором на экране:</div>
+                    <select id="f2"><option value="">...</option>
+                    <option value="mouse">Мышь</option>
+                    <option value="speakers">Колонки</option></select></div>
+                <div class="match-item"><div>Создаёт твёрдую копию документа:</div>
+                    <select id="f3"><option value="">...</option>
+                        <option value="scanner">Сканер</option>
+                        <option value="printer">Принтер</option></select></div></div>
+                <button class="btn" onclick="checkConnectorTask2()">Проверить</button><div class="feedback" id="fb2"></div></div>
+
+            <div class="task" id="task3"><h2>Задание 3. Собери комплект</h2>
+                <p>Школьнику нужно записать видеопрезентацию (голос + видео) и показать её классу.</p>
+                <p><strong>Устройства ввода (выбери 2):</strong></p>
+                    <label><input type="checkbox" value="webcam">Веб-камера</label>
+                    <label><input type="checkbox" value="microphone">Микрофон</label>
+                    <label><input type="checkbox" value="printer">Принтер</label>
+                <p><strong>Устройство вывода для показа классу:</strong></p>
+                    <label><input type="radio" name="q2" value="monitor">Монитор</label>
+                    <label><input type="radio" name="q2" value="projector">Проектор</label>
+                <br><button class="btn" onclick="checkConnectorTask3()">Проверить</button><div class="feedback" id="fb3"></div></div>`,
+
+        init: function() { 
+            let draggedItem = null;
+            document.querySelectorAll('[draggable="true"]').forEach(item => {
+                item.addEventListener('dragstart', (e) => { draggedItem = e.target; setTimeout(() => e.target.classList.add('dragging'), 0); });
+                item.addEventListener('dragend', () => draggedItem.classList.remove('dragging'));
+            });
+            document.querySelectorAll('#input-zone, #output-zone').forEach(zone => {
+                zone.addEventListener('dragover', e => e.preventDefault());
+                zone.addEventListener('drop', (e) => { e.preventDefault(); if (draggedItem) zone.appendChild(draggedItem); });
+            });
+        },
+        checks: {
+            checkConnectorTask1: () => { const inputOk = ['Клавиатура','Мышь','Микрофон'].every(t => document.getElementById('input-zone').textContent.includes(t)); const outputOk = ['Монитор','Принтер','Колонки'].every(t => document.getElementById('output-zone').textContent.includes(t)); const isOk = inputOk && outputOk; showFeedback('fb1', isOk, isOk ? '✅ Верно!' : '❌ Не все устройства на своих местах.'); },
+            checkConnectorTask2: () => { const isOk = document.getElementById('f1').value === 'scanner' && document.getElementById('f2').value === 'mouse' && document.getElementById('f3').value === 'printer'; showFeedback('fb2', isOk, isOk ? '✅ Отлично!' : '❌ Ошибка в соотнесении.'); },
+            checkConnectorTask3: () => { const c1 = document.querySelector('input[value="webcam"]:checked'); const c2 = document.querySelector('input[value="microphone"]:checked'); const r = document.querySelector('input[name="q2"]:checked'); const isOk = c1 && c2 && r.value === 'projector'; showFeedback('fb3', isOk, isOk ? '✅ Идеальный комплект!' : '❌ Подумайте, что нужно для записи видео и показа на большую аудиторию.'); }
+        }
+    },
+    engineer: {
+        name: "Системный Инженер",
+        secret: "ВНУТРЕННЕЕ УСТРОЙСТВО",
+        isCaptain: false,
+        html: `
+            <div class="task" id="task1"><h2>Задание 1. Что за что отвечает?</h2>
+                <div class="grid"><div><strong>Процессор (CPU):</strong> 
+                    <select id="c1"><option value="">...</option>
+                        <option value="compute">Обработка данных</option>
+                        <option value="storage">Хранение данных</option></select></div>
+                <div><strong>Оперативная память (RAM):</strong> 
+                    <select id="c2"><option value="">...</option>
+                        <option value="temp">Временное хранение</option>
+                        <option value="perm">Постоянное хранение</option></select></div>
+                <div><strong>Жёсткий диск / SSD:</strong> 
+                    <select id="c3"><option value="">...</option>
+                        <option value="perm">Постоянное хранение</option>
+                        <option value="temp">Временная память</option></select></div>
+                <div><strong>Материнская плата:</strong> 
+                    <select id="c4"><option value="">...</option>
+                        <option value="connect">Объединяет всё</option>
+                        <option value="cool">Охлаждает</option></select></div></div>
+                <button class="btn" onclick="checkEngineerTask1()">Проверить</button><div class="feedback" id="fb1"></div></div>
+
+            <div class="task" id="task2"><h2>Задание 2. Угадай компонент</h2>
+                <p><strong>1.</strong> «Микросхема, хранящая настройки BIOS. Не стирается при выключении».</p>
+                    <label><input type="radio" name="q1" value="ram"> RAM</label> 
+                    <label><input type="radio" name="q1" value="rom"> ПЗУ</label>
+                <p><strong>2.</strong> «Устройство, которое обрабатывает графику и выводит изображение».</p>
+                    <label><input type="radio" name="q2" value="cpu"> CPU</label> <label>
+                    <input type="radio" name="q2" value="gpu"> Видеокарта</label>
+                <br><button class="btn" onclick="checkEngineerTask2()">Проверить</button><div class="feedback" id="fb2"></div></div>
+
+            <div class="task" id="task3"><h2>Задание 3. Собери компьютер для задачи</h2>
+                <p>Нужен компьютер для современных игр.</p>
+                <p><strong>Какие 2 компонента важнее всего для высокой производительности в играх?</strong></p>
+                    <label><input type="checkbox" value="cpu">Мощный процессор</label>
+                    <label><input type="checkbox" value="gpu">Мощная видеокарта</label>
+                    <label><input type="checkbox" value="ram">Много оперативной памяти</label>
+                    <label><input type="checkbox" value="hdd">Большой жесткий диск</label>
+                
+                <br><button class="btn" onclick="checkEngineerTask3()">Проверить</button><div class="feedback" id="fb3"></div></div>`,
+                
+        init: null,
+        checks: {
+            checkEngineerTask1: () => { const isOk = document.getElementById('c1').value === 'compute' && document.getElementById('c2').value === 'temp' && document.getElementById('c3').value === 'perm' && document.getElementById('c4').value === 'connect'; showFeedback('fb1', isOk, isOk ? '✅ Верно!' : '❌ Не все функции верны.'); },
+            checkEngineerTask2: () => { const isOk = document.querySelector('input[name="q1"]:checked')?.value === 'rom' && document.querySelector('input[name="q2"]:checked')?.value === 'gpu'; showFeedback('fb2', isOk, isOk ? '✅ Точно!' : '❌ Вспомните: ПЗУ - постоянное, видеокарта - графика.'); },
+            checkEngineerTask3: () => { const cpu = document.querySelector('input[value="cpu"]:checked'); const gpu = document.querySelector('input[value="gpu"]:checked'); const ram = document.querySelector('input[value="ram"]:checked'); const hdd = document.querySelector('input[value="hdd"]:checked'); const isOk = cpu && gpu && !ram && !hdd; showFeedback('fb3', isOk, isOk ? '✅ Правильно! Процессор и видеокарта — главная связка для игр.' : '❌ Не совсем. Самое важное для игр — процессор и видеокарта.'); }
+        }
+    }
+};
+
+window.onload = function() {
+    const role = localStorage.getItem('role');
+    const roleData = rolesData[role];
+    if (!roleData) {
+        alert("Ошибка! Роль не выбрана.");
+        window.location.href = 'index.html';
+        return;
+    }
+
+
+    document.getElementById('task-title').textContent = `Задания для: ${roleData.name}`;
+    document.getElementById('tasks-container').innerHTML = roleData.html;
+    if (roleData.init) {
+        roleData.init();
+    }
+    for (const checkName in roleData.checks) {
+        window[checkName] = roleData.checks[checkName];
+    }
+};
+
+function showFeedback(id, isCorrect, message) {
+    const fb = document.getElementById(id);
+    fb.style.display = 'block';
+    fb.className = 'feedback ' + (isCorrect ? 'correct' : 'incorrect');
+    fb.textContent = message;
+    checkAllTasksDone();
+}
+
+function checkAllTasksDone() {
+    let doneCount = 0;
+    const feedbacks = document.querySelectorAll('.feedback');
+    feedbacks.forEach(fb => {
+        if (fb.style.display === 'block' && fb.classList.contains('correct')) {
+            doneCount++;
+        }
+    });
+
+    document.getElementById('progressBar').style.width = (doneCount / feedbacks.length * 100) + '%';
+    
+    if (doneCount === feedbacks.length) {
+
+        alert('Все тесты пройдены! Вы получаете доступ к редактору чертежей.');
+        window.location.href = 'content_creator.html';
+    }
+}
+    
+
+</script>
+</body>
+</html>

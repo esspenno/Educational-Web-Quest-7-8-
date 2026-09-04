@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Квест: Проект "Генезис"</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            background-color: #f4f7f6;
+        }
+        .header {
+            width: 100%;
+            background-color: #ffffff;
+            padding: 60px 20px;
+            text-align: center;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        .header h1 {
+            font-size: 3em;
+            color: #2c3e50;
+            margin: 0;
+        }
+        .header p.subtitle {
+            max-width: 700px;
+            margin: 15px auto 0;
+            font-size: 1.2em;
+            color: #555;
+            line-height: 1.6;
+        }
+        .main-content {
+            padding: 50px 20px;
+            text-align: center;
+        }
+        .legend-text {
+            max-width: 800px;
+            margin: 0 auto 40px;
+            text-align: left;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 12px;
+            border: 1px solid #e0e0e0;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+        .legend-text p {
+            font-size: 1.1em;
+            margin-bottom: 15px;
+        }
+        .legend-text strong {
+            color: #2980b9;
+        }
+        .legend-text .sender {
+            font-weight: bold;
+            color: #34495e;
+            display: block;
+            margin-bottom: 10px;
+        }
+        .main-image {
+            max-width: 700px;
+            width: 100%;
+            height: auto;
+            border-radius: 12px;
+            margin: 0 auto 40px;
+            display: block;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        .call-to-action h2 {
+            font-size: 2.2em;
+            color: #2980b9;
+            margin-bottom: 25px;
+        }
+        .button-container {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            flex-wrap: wrap;
+        }
+        .team-button {
+             background-color: #3498db; border: none; border-radius: 8px; color: #ffffff;
+             padding: 15px 40px; font-size: 1.2em; font-weight: bold; cursor: pointer;
+             transition: all 0.3s ease;
+             box-shadow: 0 4px 6px rgba(50, 50, 93, 0.11);
+        }
+        .team-button:hover {
+            background-color: #2980b9;
+            transform: translateY(-3px);
+        }
+    </style>
+</head>
+<body>
+    <div style="width:100%;">
+        <header class="header">
+            <h1>Проект "Генезис"</h1>
+            <p class="subtitle">Сборка Цифрового Разума</p>
+        </header>
+
+
+
+        <main class="main-content">
+            <div class="legend-text">
+                <p><span class="sender">Входящее сообщение. Уровень доступа: ВЫСШИЙ.</span></p>
+                <p>Агенты!</p>
+                <p>Мир стоит на пороге новой эры. Десятилетиями лучшие умы человечества работали над проектом <strong>«Генезис»</strong> — созданием первого в мире по-настоящему великого искусственного интеллекта.</p>
+                <p>Но произошла катастрофа. Неизвестный вирус проник в нашу сеть и <strong>разбросал</strong> базовые знания «Генезиса» о самом себе. Он буквально "забыл", что такое компьютер, как он устроен и как развивался. Сейчас он — лишь пустая оболочка.</p>
+                <p>Время работает против нас. Через 40 минут системы безопасности проведут полную очистку и навсегда сотрут ядро «Генезиса». Ваша миссия — восстановить его память, собрав <strong>Цифровой Чертеж</strong> из уцелевших фрагментов знаний.</p>
+                <p>Вы — наша последняя надежда. Судьба величайшего проекта в истории человечества в ваших руках.</p>
+                <p><span class="sender">Конец связи.</span></p>
+            </div>
+            
+                <img src="1.jpg" class="main-image">
+
+            <div class="call-to-action">
+                <h2>Выберите свою инженерную команду для начала миссии:</h2>
+                <div class="button-container">
+                    <button class="team-button" id="team-alpha">Команда Альфа</button>
+                    <button class="team-button" id="team-beta">Команда Бета</button>
+                    <button class="team-button" id="team-gamma">Команда Гамма</button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        document.getElementById('team-alpha').onclick = () => selectTeam('alpha');
+        document.getElementById('team-beta').onclick = () => selectTeam('beta');
+        document.getElementById('team-gamma').onclick = () => selectTeam('gamma');
+
+        function selectTeam(teamName) {
+            localStorage.setItem('team', teamName);
+            window.location.href = 'roles.html';
+        }
+    </script>
+</body>
+</html>
